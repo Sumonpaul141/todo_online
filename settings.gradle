@@ -1,0 +1,2 @@
+rootProject.name='ToDoOnline'
+include ':app'

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context=".Views.LoginActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+        <ImageView
+            android:layout_marginBottom="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:src="@drawable/todologo"
+            android:layout_marginTop="10dp"/>
+
+        <EditText
+            android:id="@+id/loginEmailEt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/background_outer"
+            android:drawablePadding="10dp"
+            android:hint="Phone, Email or User Name"
+            android:padding="8dp" />
+
+        <EditText
+            android:id="@+id/loginPasswordEt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:background="@drawable/background_outer"
+            android:padding="8dp"
+            android:drawablePadding="10dp"
+            android:layout_margin="10dp"/>
+        <Button
+            android:id="@+id/loginSignInBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_outer"
+            android:backgroundTint="@color/colorPrimary"
+            android:hint="Sign In"
+            android:textColorHint="@color/colorWhite"
+            android:layout_margin="10dp"/>
+
+        <TextView
+            android:layout_marginTop="30dp"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Don't have any account? "/>
+
+        <Button
+            android:id="@+id/loginRegistrationBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:background="@drawable/background_outer"
+            android:backgroundTint="@color/colorOffWhite"
+            android:text="Registration"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimary" />
+
+    </LinearLayout>
+
+</ScrollView>
