@@ -19,7 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Views.AddTodoActivity" />
+        <activity android:name=".Views.AddTaskActivity"
+            android:parentActivityName=".Views.MainActivity"/>
         <activity
             android:name=".Views.RegistrationActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />

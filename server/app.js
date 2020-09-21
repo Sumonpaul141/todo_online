@@ -17,6 +17,17 @@ var userSchema = new mongoose.Schema({
 });
 var user = mongoose.model("user", userSchema);
 
+var taskSchema = new mongoose.Schema({
+	taskTitle: String,
+    taskDescription : String,
+    userId :{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "User"
+		},
+});
+var task = mongoose.model("task", taskSchema);
+
+
 
 app.post("/user_reg", function(req, res){
 
@@ -111,6 +122,85 @@ app.post("/user_login", function(req, res){
     }
 });
 
+
+app.post("/all_task", function(req, res){
+
+    var Suser = req.body.userId;
+    
+    if(Suser == null || Suser.trim() == ""){
+
+        var obj = {
+            "code" : "0",
+            "massage" : "Invalid parameter"
+        }
+        res.send(obj);
+        console.log("Invalid parameter");
+
+    }else{
+        task.find({"userId" : Suser}, function(err, newlyTask){
+            if (err) {
+                console.log(err);
+            }else{
+                var allTask = []
+                for (let index = 0; index < newlyTask.length; index++) {
+                    var obj = {
+                        "title" : newlyTask[index].taskTitle,
+                        "descreiption" : newlyTask[index].taskDescription,
+                    }
+                    allTask.push(obj);
+                }
+                
+                var response = {
+                    "code" : "1",
+                    "allTask" : allTask
+                }
+
+                res.send(response); 
+                console.log("All task send");
+            }
+    
+        });
+    }
+});
+
+
+app.post("/add_task", function(req, res){
+
+    var Stitle= req.body.taskTitle;
+    var Sdesc = req.body.taskDescription;
+    var Suser = req.body.userId;
+    
+    if(Stitle == null || Stitle.trim() == "" || Suser == null || Suser.trim() == ""){
+
+        var obj = {
+            "code" : "0",
+            "massage" : "Invalid parameter"
+        }
+        res.send(obj);
+        console.log("Invalid parameter");
+
+    }else{
+
+        var newTask = {taskTitle: Stitle, taskDescription: Sdesc, userId : Suser};
+
+        task.create(newTask, function(err, newlyTask){
+            if (err) {
+                console.log(err);
+            }else{
+                var obj = {
+                    "code" : "1",
+                    "massage" : "task Created",
+                    "title" : newlyTask.taskTitle,
+                    "descreiption" : newlyTask.taskDescription,
+                    "userId" : newlyTask.userId
+                }
+                res.send(obj); 
+                console.log("Task created!!");
+            }
+    
+        });
+    }
+});
 
 
 app.get("/", function(req, res){

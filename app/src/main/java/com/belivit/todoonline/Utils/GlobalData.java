@@ -43,5 +43,15 @@ public class GlobalData {
         Log.d("paul", "getRegistrationUrl: " + url);
         return url;
     }
+    public static String getAddTasknUrl() {
+        String url = base_url + "/add_task";
+        Log.d("paul", "getAddTasknUrl: " + url);
+        return url;
+    }
+    public static String getAllTasknUrl() {
+        String url = base_url + "/all_task";
+        Log.d("paul", "getAllTasknUrl: " + url);
+        return url;
+    }
 
 }

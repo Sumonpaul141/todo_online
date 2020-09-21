@@ -87,7 +87,6 @@ public class LoginActivity extends AppCompatActivity {
                 if (info.getCode().equals("0")){
                     Toast.makeText(LoginActivity.this, "user doesn't exists, Register now", Toast.LENGTH_SHORT).show();
                 }else {
-
                     SharedPref.saveShared(LoginActivity.this, SharedPref.USER_NAME, info.getName());
                     SharedPref.saveShared(LoginActivity.this, SharedPref.USER_EMAIL, info.getEmail());
                     SharedPref.saveShared(LoginActivity.this, SharedPref.USER_ID, info.getId());
@@ -104,8 +103,6 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
-
-
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(request);
 

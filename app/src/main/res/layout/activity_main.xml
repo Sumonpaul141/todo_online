@@ -1,31 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
     tools:context=".Views.MainActivity">
 
-    <TextView
 
-        android:layout_width="wrap_content"
-        android:textSize="26sp"
-        android:layout_height="wrap_content"
-        android:text="Welcome"/>
-    <TextView
-        android:id="@+id/nameEt"
-        android:layout_width="wrap_content"
-        android:textSize="26sp"
-        android:layout_height="wrap_content"
-        android:text="Name ,  email"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:overScrollMode="never"
+        android:layout_above="@+id/logoutBtn"
+        android:paddingTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/allTaskRv"/>
 
     <Button
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="20dp"
         android:id="@+id/logoutBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="logout"/>
+        android:background="@drawable/round_background"
+        android:text="logout"
+        android:textColor="@color/colorWhite" />
+
+    <ImageButton
+        android:id="@+id/addFabIv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp"
+        android:background="@drawable/round_background"
+        android:padding="15dp"
+        android:src="@drawable/ic_add_black_24dp"
+        android:elevation="5dp"
+        android:tint="@color/colorWhite" />
 
 
-</LinearLayout>
+</RelativeLayout>
