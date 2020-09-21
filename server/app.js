@@ -231,8 +231,6 @@ app.post("/add_todo", function(req, res){
     }else{
 
         var newTodo = {todoTitle: Stitle, taskId : StaskId};
-        console.log(newTodo);
-
         todo.create(newTodo, function(err, newlyTodo){
             if (err) {
                 console.log(err);
@@ -246,6 +244,48 @@ app.post("/add_todo", function(req, res){
                 }
                 res.send(obj); 
                 console.log("Todo created!!");
+            }
+    
+        });
+    }
+});
+
+
+app.post("/all_todo", function(req, res){
+
+    var StaskId = req.body.taskId;
+    
+    if(StaskId == null || StaskId.trim() == ""){
+
+        var obj = {
+            "code" : "0",
+            "massage" : "Invalid parameter"
+        }
+        res.send(obj);
+        console.log("Invalid parameter");
+
+    }else{
+        todo.find({"taskId" : StaskId}, function(err, newlyTodos){
+            if (err) {
+                console.log(err);
+            }else{
+                var allTodo = []
+                for (let index = 0; index < newlyTodos.length; index++) {
+                    var obj = {
+                        "todoTitle" : newlyTodos[index].todoTitle,
+                        "isDone" : newlyTodos[index].isDone,
+                        "todoId" : newlyTodos[index]._id
+                    }
+                    allTodo.push(obj);
+                }
+                
+                var response = {
+                    "code" : "1",
+                    "allTodo" : allTodo
+                }
+
+                res.send(response); 
+                console.log("All todos send");
             }
     
         });

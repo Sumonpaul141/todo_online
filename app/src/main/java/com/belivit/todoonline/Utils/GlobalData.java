@@ -53,5 +53,16 @@ public class GlobalData {
         Log.d("paul", "getAllTasknUrl: " + url);
         return url;
     }
+    public static String getAddTodoUrl() {
+        String url = base_url + "/add_todo";
+        Log.d("paul", "getAddTodoUrl: " + url);
+        return url;
+    }
+
+    public static String getAllTodoUrl() {
+        String url = base_url + "/all_todo";
+        Log.d("paul", "getAddTodoUrl: " + url);
+        return url;
+    }
 
 }
