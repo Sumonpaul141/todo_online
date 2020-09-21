@@ -18,6 +18,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.belivit.todoonline.Models.UserInfo;
 import com.belivit.todoonline.R;
+import com.belivit.todoonline.Utils.GlobalData;
 import com.belivit.todoonline.Utils.SharedPref;
 import com.google.gson.Gson;
 
@@ -66,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     private void logInUser(String email, String password) {
-        String URL = "http://10.0.2.2:5000/user_login";
+        String URL = GlobalData.getLoginUrl();
 
         JSONObject rewParams = new JSONObject();
         try {

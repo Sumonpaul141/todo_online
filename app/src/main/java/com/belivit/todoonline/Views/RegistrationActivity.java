@@ -18,6 +18,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.belivit.todoonline.Models.UserInfo;
 import com.belivit.todoonline.R;
+import com.belivit.todoonline.Utils.GlobalData;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -64,8 +65,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
 
     private void registerUser(String email, String password, String name) {
-        String URL = "http://10.0.2.2:5000/user_reg";
-
+        String URL = GlobalData.getRegistrationUrl();
         JSONObject rewParams = new JSONObject();
         try {
             rewParams.put("email", email);
