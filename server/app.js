@@ -28,6 +28,17 @@ var taskSchema = new mongoose.Schema({
 var task = mongoose.model("task", taskSchema);
 
 
+var todoSchema = new mongoose.Schema({
+	todoTitle: String,
+    isDone : { type: Boolean, default: false },
+    taskId :{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Task"
+		},
+});
+var todo = mongoose.model("todo", todoSchema);
+
+
 
 app.post("/user_reg", function(req, res){
 
@@ -202,6 +213,45 @@ app.post("/add_task", function(req, res){
         });
     }
 });
+
+app.post("/add_todo", function(req, res){
+
+    var Stitle= req.body.todoTitle;
+    var StaskId = req.body.taskId;
+    
+    if(Stitle == null || Stitle.trim() == "" || StaskId == null || StaskId.trim() == ""){
+
+        var obj = {
+            "code" : "0",
+            "massage" : "Invalid parameter"
+        }
+        res.send(obj);
+        console.log("Invalid parameter");
+
+    }else{
+
+        var newTodo = {todoTitle: Stitle, taskId : StaskId};
+        console.log(newTodo);
+
+        todo.create(newTodo, function(err, newlyTodo){
+            if (err) {
+                console.log(err);
+            }else{
+                var obj = {
+                    "code" : "1",
+                    "massage" : "todo Created",
+                    "todoTitle" : newlyTodo.todoTitle,
+                    "isDone" : newlyTodo.isDone,
+                    "todoId" : newlyTodo._id
+                }
+                res.send(obj); 
+                console.log("Todo created!!");
+            }
+    
+        });
+    }
+});
+
 
 
 app.get("/", function(req, res){
