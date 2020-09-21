@@ -146,6 +146,7 @@ app.post("/all_task", function(req, res){
                     var obj = {
                         "title" : newlyTask[index].taskTitle,
                         "descreiption" : newlyTask[index].taskDescription,
+                        "taskId" : newlyTask[index]._id
                     }
                     allTask.push(obj);
                 }
