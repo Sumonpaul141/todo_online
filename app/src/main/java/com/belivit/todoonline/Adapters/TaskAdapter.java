@@ -1,6 +1,7 @@
 package com.belivit.todoonline.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.belivit.todoonline.Models.Task;
 import com.belivit.todoonline.R;
+import com.belivit.todoonline.Views.DetailsTaskActivity;
 
 import java.util.List;
 
@@ -32,10 +34,20 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TaskAdapter.ViewHolder holder, int position) {
-        Task task = taskList.get(position);
+    public void onBindViewHolder(@NonNull final TaskAdapter.ViewHolder holder, int position) {
+        final Task task = taskList.get(position);
         holder.title.setText(task.getTitle());
         holder.description.setText(task.getDescreiption());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, DetailsTaskActivity.class);
+                intent.putExtra("title", task.getTitle());
+                intent.putExtra("description", task.getDescreiption());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override

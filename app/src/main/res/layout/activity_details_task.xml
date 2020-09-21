@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Views.DetailsTaskActivity"
+    android:background="@color/colorLite">
+
+    <LinearLayout
+        android:id="@+id/viewTaskLL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:backgroundTint="@color/colorWhite"
+            android:id="@+id/detailsTaskTitleTV"
+            android:textColor="@color/colorPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Your task title"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:background="@drawable/background_outer"
+            android:padding="15dp"
+            android:layout_margin="10dp"
+            />
+        <TextView
+            android:backgroundTint="@color/colorWhite"
+            android:id="@+id/detailsTaskDescriptionTv"
+            android:textColor="@color/colorPrimary"
+            android:textSize="12sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Task description "
+            android:background="@drawable/background_outer"
+            android:padding="15dp"
+            android:gravity="top"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            />
+    </LinearLayout>
+
+</LinearLayout>
