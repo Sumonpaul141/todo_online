@@ -5,9 +5,19 @@ public class Task {
 
     private String title;
 
+    private String taskId;
+
     public String getDescreiption ()
     {
         return descreiption;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     public void setDescreiption (String descreiption)

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Views.DetailsTaskActivity"
+    android:orientation="vertical"
     android:background="@color/colorLite">
 
     <LinearLayout
@@ -41,6 +42,39 @@
             android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp"
             />
+    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_margin="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp">
+
+        <EditText
+            android:id="@+id/todoEt"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_outer"
+            android:padding="15dp"
+            android:textColor="@color/colorGrey"
+            android:hint="add your list item..."
+            android:layout_marginRight="10dp"/>
+
+        <ImageButton
+            android:id="@+id/addTodoIb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add_black_24dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:background="@drawable/background_outer"
+            android:tint="@color/colorLite"
+            android:padding="15dp"/>
     </LinearLayout>
 
 </LinearLayout>
