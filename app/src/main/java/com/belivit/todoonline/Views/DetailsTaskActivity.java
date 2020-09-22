@@ -122,15 +122,20 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
             @Override
             public void onResponse(JSONObject response) {
                 Log.d("paul", "addTodoToDb: Response: " + response.toString());
-                String code = "";
+                String code = "", todoTitle = "", todoId = "";
                 try {
                     code = response.getString("code");
+                    todoTitle = response.getString("todoTitle");
+                    todoId = response.getString("todoId");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 if (code.equals("1")){
-                    todoList.clear();
-                    seeAllTodos(taskId);
+//                    todoList.clear();
+//                    seeAllTodos(taskId);
+                    Todo newTodo = new Todo(todoId, todoTitle, false);
+                    todoList.add(newTodo);
+                    todoAdapter.notifyDataSetChanged();
                 }
 
             }
@@ -154,7 +159,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         addTodoIb = findViewById(R.id.addTodoIb);
 
         todoRv = findViewById(R.id.todoRv);
-        todoRv.setHasFixedSize(true);
+//        todoRv.setHasFixedSize(true);
         todoRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         todoList = new ArrayList<>();
     }
@@ -181,7 +186,6 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Log.d("paul ", "onResponse: code type " + code);
                 if (code == 1){
                     Todo newTodo = new Todo(todo.getTodoId(), todo.getTodoTitle(), isDone);
                     todoList.set(position, newTodo);
@@ -224,7 +228,6 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                Log.d("paul", "onResponse: code :  " + code.equals("1") + "   n   " + n.equals("1"));
                 if (code.equals("1") && n.equals("1")){
                     Log.d("paul", "onResponse: Deleted done ");
                     todoAdapter.delete(position);
