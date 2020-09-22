@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     android:id="@+id/itemLL"
-    android:layout_margin="3dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:paddingLeft="10dp"
     android:gravity="center"
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:background="@color/colorWhite">
+    android:backgroundTint="@color/colorWhite"
+    android:background="@drawable/background_outer">
     <CheckBox
         android:id="@+id/todoChecked"
         android:padding="10dp"
@@ -19,6 +24,7 @@
         android:layout_height="wrap_content"
         android:text="Todo"
         android:padding="10dp"
+        android:textColor="@color/colorPrimary"
         android:layout_weight="1"/>
 
     <ImageButton

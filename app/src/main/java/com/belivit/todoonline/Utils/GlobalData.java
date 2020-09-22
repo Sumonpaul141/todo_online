@@ -11,6 +11,7 @@ public class GlobalData {
     private static String version = "";
     private static String sourceWithVersion;
     private static String base_url = "http://10.0.2.2:5000";
+//    private static String base_url = "http://192.168.8.16:5000";
 
 
     public static String getSourceWithVersion(Context context) {
@@ -61,17 +62,17 @@ public class GlobalData {
 
     public static String getAllTodoUrl() {
         String url = base_url + "/all_todo";
-        Log.d("paul", "getAddTodoUrl: " + url);
+        Log.d("paul", "getAllTodoUrl: " + url);
         return url;
     }
     public static String getCheckTodoUrl() {
         String url = base_url + "/check_todo";
-        Log.d("paul", "getAddTodoUrl: " + url);
+        Log.d("paul", "getCheckTodoUrl: " + url);
         return url;
     }
     public static String getDeleteTodoUrl() {
         String url = base_url + "/delete_todo";
-        Log.d("paul", "getAddTodoUrl: " + url);
+        Log.d("paul", "getDeleteTodoUrl: " + url);
         return url;
     }
 

@@ -1,7 +1,9 @@
 package com.belivit.todoonline.Adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +13,15 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.belivit.todoonline.Interface.TodoCheckEvent;
 import com.belivit.todoonline.Models.Todo;
 import com.belivit.todoonline.R;
+import com.belivit.todoonline.Utils.ToastUtils;
 
 import org.w3c.dom.Text;
 
@@ -41,34 +46,50 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
         return new TodoAdapter.ViewHolder(view);
     }
 
+
     @Override
-    public void onBindViewHolder(@NonNull TodoAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final TodoAdapter.ViewHolder holder, final int position) {
+
         final Todo todo = todoList.get(position);
         holder.todoTitleTv.setText(todo.getTodoTitle());
         holder.todoChecked.setChecked(todo.getIsDone());
         if (todo.getIsDone()){
-            holder.itemView.setBackgroundColor(Color.parseColor("#8C999C"));
+            holder.todoTitleTv.setTextColor(Color.parseColor("#CCEEEE"));
+        }else {
+            holder.todoTitleTv.setTextColor(Color.parseColor("#117999"));
         }
-
         holder.todoChecked.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                todoCheckEvent.onTodoChecked(isChecked, todo.getTodoId());
+                if (isChecked){
+                    holder.todoTitleTv.setTextColor(Color.parseColor("#CCEEEE"));
+                }else {
+                    holder.todoTitleTv.setTextColor(Color.parseColor("#117999"));
+                }
+                todoCheckEvent.onTodoChecked(isChecked, todo, position);
             }
         });
 
         holder.itemDeleteIb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                todoCheckEvent.onTodoDelete(todo.getTodoId());
+                todoCheckEvent.onTodoDelete(todo.getTodoId(),position);
             }
         });
+    }
+
+    public void delete(int position){
+        int newPosition = position;
+        todoList.remove(newPosition);
+        notifyItemRemoved(newPosition);
+        notifyItemRangeChanged(newPosition, todoList.size());
     }
 
     @Override
     public int getItemCount() {
         return todoList.size();
     }
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView todoTitleTv;

@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:background="@color/colorLite">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -24,7 +24,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Your task title"
-                android:textAllCaps="true"
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:background="@drawable/background_outer"
@@ -47,18 +46,17 @@
                 android:layout_marginBottom="10dp"
                 />
         </LinearLayout>
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/todoRv"
-            android:layout_margin="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+
         <LinearLayout
+            android:id="@+id/addLL"
+            android:layout_below="@+id/todoRv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
             android:layout_marginRight="15dp"
-            android:layout_marginLeft="15dp">
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="20dp">
 
             <EditText
                 android:id="@+id/todoEt"
@@ -66,21 +64,36 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:background="@drawable/background_outer"
-                android:padding="15dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:textSize="12sp"
                 android:textColor="@color/colorGrey"
                 android:hint="add your list item..."
                 android:layout_marginRight="10dp"/>
 
-            <ImageButton
+            <Button
                 android:id="@+id/addTodoIb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_add_black_24dp"
                 android:backgroundTint="@color/colorPrimary"
                 android:background="@drawable/background_outer"
-                android:tint="@color/colorLite"
-                android:padding="15dp"/>
+                android:textColor="@color/colorLite"
+                android:text="add"
+                android:padding="5dp"/>
         </LinearLayout>
-    </LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_below="@+id/viewTaskLL"
+            android:id="@+id/todoRv"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="20dp"
+            android:layout_height="wrap_content"/>
 
+
+    </RelativeLayout>
 </ScrollView>

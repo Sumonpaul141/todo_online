@@ -311,7 +311,7 @@ app.post("/check_todo", function(req, res){
                 console.log(err);
             }else{
                 res.send(newlyTodo); 
-                console.log("Updated todo send");
+                console.log("Todo updated, status send");
             }
     
         });
@@ -337,7 +337,7 @@ app.post("/delete_todo", function(req, res){
                 console.log(err);
             }else{
                 res.send(newlyTodo); 
-                console.log("Todo deleted");
+                console.log("Todo deleted, status send");
             }
     
         });
@@ -350,6 +350,6 @@ app.get("/", function(req, res){
 });
 
 
-app.listen("5000",function(req, res){
+app.listen("5000","0.0.0.0",function(req, res){
     console.log("Your server is running on " + Port);
 });

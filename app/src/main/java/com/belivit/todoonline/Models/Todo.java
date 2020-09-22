@@ -7,6 +7,12 @@ public class Todo {
 
     private boolean isDone;
 
+    public Todo(String todoId, String todoTitle, boolean isDone) {
+        this.todoId = todoId;
+        this.todoTitle = todoTitle;
+        this.isDone = isDone;
+    }
+
     public String getTodoId ()
     {
         return todoId;

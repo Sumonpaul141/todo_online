@@ -4,10 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -20,7 +20,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.belivit.todoonline.Adapters.TodoAdapter;
 import com.belivit.todoonline.Interface.TodoCheckEvent;
-import com.belivit.todoonline.Models.AllTask;
 import com.belivit.todoonline.Models.AllTodo;
 import com.belivit.todoonline.Models.Todo;
 import com.belivit.todoonline.R;
@@ -39,12 +38,11 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
     TextView detailsTaskDescriptionTv, detailsTaskTitleTV;
     String title= "", description ="", taskId = "";
     EditText todoEt;
-    ImageButton addTodoIb;
+    Button addTodoIb;
 
     List<Todo> todoList;
     RecyclerView todoRv;
     TodoAdapter todoAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,17 +154,18 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         addTodoIb = findViewById(R.id.addTodoIb);
 
         todoRv = findViewById(R.id.todoRv);
-        todoRv.setLayoutManager(new LinearLayoutManager(this));
+        todoRv.setHasFixedSize(true);
+        todoRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         todoList = new ArrayList<>();
     }
 
     @Override
-    public void onTodoChecked(boolean isDone, String todoId) {
+    public void onTodoChecked(final boolean isDone, final Todo todo, final int position) {
         String URL = GlobalData.getCheckTodoUrl();
 
         JSONObject params = new JSONObject();
         try {
-            params.put("todoID", todoId);
+            params.put("todoID", todo.getTodoId());
             params.put("isDone", isDone);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -176,16 +175,19 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
             @Override
             public void onResponse(JSONObject response) {
                 Log.d("paul", "onTodoChecked: Response: " + response.toString());
-                String code = "";
+                int code = 0;
                 try {
-                    code = response.getString("nModified");
+                    code = response.getInt("nModified");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                if (code.equals("1")){
-                    todoList.clear();
-                    seeAllTodos(taskId);
+                Log.d("paul ", "onResponse: code type " + code);
+                if (code == 1){
+                    Todo newTodo = new Todo(todo.getTodoId(), todo.getTodoTitle(), isDone);
+                    todoList.set(position, newTodo);
                 }
+
+
             }
         }, new Response.ErrorListener() {
             @Override
@@ -200,7 +202,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
     }
 
     @Override
-    public void onTodoDelete(String todoId) {
+    public void onTodoDelete(String todoId, final int position) {
         String URL = GlobalData.getDeleteTodoUrl();
 
         JSONObject params = new JSONObject();
@@ -214,26 +216,32 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
             @Override
             public void onResponse(JSONObject response) {
                 Log.d("paul", "onTodoDelete: Response: " + response.toString());
-                String code = "";
+                String code = "", n = "";
                 try {
                     code = response.getString("deletedCount");
+                    n = response.getString("n");
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                if (code.equals("1")){
-                    todoList.clear();
-                    seeAllTodos(taskId);
+                Log.d("paul", "onResponse: code :  " + code.equals("1") + "   n   " + n.equals("1"));
+                if (code.equals("1") && n.equals("1")){
+                    Log.d("paul", "onResponse: Deleted done ");
+                    todoAdapter.delete(position);
+
+                }else {
+                    ToastUtils.showToastError(DetailsTaskActivity.this, "Item Previously deleted");
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("paul", "onTodoDelete:  ResponseError:  " + error);
+                ToastUtils.showToastError(DetailsTaskActivity.this, "Cannot deleted. Try again");
 
             }
         });
-
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(request);
+
     }
 }
