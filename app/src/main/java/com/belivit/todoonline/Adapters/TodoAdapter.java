@@ -7,11 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.belivit.todoonline.Interface.TodoCheckEvent;
 import com.belivit.todoonline.Models.Todo;
 import com.belivit.todoonline.R;
 
@@ -23,10 +25,12 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
 
     List<Todo> todoList;
     Context context;
+    TodoCheckEvent todoCheckEvent;
 
-    public TodoAdapter(List<Todo> todoList, Context context) {
+    public TodoAdapter(List<Todo> todoList, Context context, TodoCheckEvent todoCheckEvent) {
         this.todoList = todoList;
         this.context = context;
+        this.todoCheckEvent = todoCheckEvent;
     }
 
     @NonNull
@@ -38,12 +42,19 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull TodoAdapter.ViewHolder holder, int position) {
-        Todo todo = todoList.get(position);
+        final Todo todo = todoList.get(position);
         holder.todoTitleTv.setText(todo.getTodoTitle());
         holder.todoChecked.setChecked(todo.getIsDone());
         if (todo.getIsDone()){
             holder.itemView.setBackgroundColor(Color.parseColor("#8C999C"));
         }
+
+        holder.todoChecked.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                todoCheckEvent.onTodoChecked(isChecked, todo.getTodoId());
+            }
+        });
     }
 
     @Override
@@ -60,4 +71,5 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
             todoChecked = itemView.findViewById(R.id.todoChecked);
         }
     }
+
 }

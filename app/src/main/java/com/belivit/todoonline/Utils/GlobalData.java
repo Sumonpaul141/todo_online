@@ -64,5 +64,10 @@ public class GlobalData {
         Log.d("paul", "getAddTodoUrl: " + url);
         return url;
     }
+    public static String getCheckTodoUrl() {
+        String url = base_url + "/check_todo";
+        Log.d("paul", "getAddTodoUrl: " + url);
+        return url;
+    }
 
 }
