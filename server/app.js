@@ -318,6 +318,32 @@ app.post("/check_todo", function(req, res){
     }
 });
 
+app.post("/delete_todo", function(req, res){
+
+    var StodoId = req.body.todoID;
+    
+    if(StodoId == null || StodoId.trim() == ""){
+
+        var obj = {
+            "code" : "0",
+            "massage" : "Invalid parameter"
+        }
+        res.send(obj);
+        console.log("Invalid parameter");
+
+    }else{
+        todo.deleteOne({"_id" : StodoId}, function(err, newlyTodo){
+            if (err) {
+                console.log(err);
+            }else{
+                res.send(newlyTodo); 
+                console.log("Todo deleted");
+            }
+    
+        });
+    }
+});
+
 
 app.get("/", function(req, res){
     res.send("this is the root page");

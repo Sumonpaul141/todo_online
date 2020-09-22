@@ -171,11 +171,11 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d("paul", "addTodoToDb : Params: " + params);
+        Log.d("paul", "onTodoChecked : Params: " + params);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, params, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Log.d("paul", "addTodoToDb: Response: " + response.toString());
+                Log.d("paul", "onTodoChecked: Response: " + response.toString());
                 String code = "";
                 try {
                     code = response.getString("nModified");
@@ -190,7 +190,45 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("paul", "addTodoToDb:  ResponseError:  " + error);
+                Log.d("paul", "onTodoChecked:  ResponseError:  " + error);
+
+            }
+        });
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(request);
+    }
+
+    @Override
+    public void onTodoDelete(String todoId) {
+        String URL = GlobalData.getDeleteTodoUrl();
+
+        JSONObject params = new JSONObject();
+        try {
+            params.put("todoID", todoId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("paul", "onTodoDelete : Params: " + params);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("paul", "onTodoDelete: Response: " + response.toString());
+                String code = "";
+                try {
+                    code = response.getString("deletedCount");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (code.equals("1")){
+                    todoList.clear();
+                    seeAllTodos(taskId);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("paul", "onTodoDelete:  ResponseError:  " + error);
 
             }
         });

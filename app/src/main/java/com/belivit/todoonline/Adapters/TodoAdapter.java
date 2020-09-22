@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -55,6 +56,13 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
                 todoCheckEvent.onTodoChecked(isChecked, todo.getTodoId());
             }
         });
+
+        holder.itemDeleteIb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                todoCheckEvent.onTodoDelete(todo.getTodoId());
+            }
+        });
     }
 
     @Override
@@ -65,10 +73,12 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView todoTitleTv;
         CheckBox todoChecked;
+        ImageButton itemDeleteIb;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             todoTitleTv = itemView.findViewById(R.id.itemTodoTitleTv);
             todoChecked = itemView.findViewById(R.id.todoChecked);
+            itemDeleteIb = itemView.findViewById(R.id.itemDeleteIb);
         }
     }
 

@@ -69,5 +69,10 @@ public class GlobalData {
         Log.d("paul", "getAddTodoUrl: " + url);
         return url;
     }
+    public static String getDeleteTodoUrl() {
+        String url = base_url + "/delete_todo";
+        Log.d("paul", "getAddTodoUrl: " + url);
+        return url;
+    }
 
 }
