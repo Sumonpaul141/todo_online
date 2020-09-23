@@ -4,12 +4,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -43,6 +48,10 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
     List<Todo> todoList;
     RecyclerView todoRv;
     TodoAdapter todoAdapter;
+
+    LinearLayout linearLayout;
+    int i;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +100,10 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
                 todoList.addAll(Arrays.asList(allTodo.getAllTodo()));
                 todoAdapter = new TodoAdapter(todoList, DetailsTaskActivity.this, DetailsTaskActivity.this);
                 todoRv.setAdapter(todoAdapter);
+//
+//                for (i = 0; i< todoList.size() ; i++){
+//                    myAdapter(todoList.get(i), i);
+//                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -104,6 +117,39 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(request);
     }
+
+
+//    public void myAdapter(Todo todo, final int i){
+//        LinearLayout singleLL = new LinearLayout(getApplicationContext());
+//        singleLL.setBackgroundColor(Color.WHITE);
+//        TextView textView = new TextView(getApplicationContext());
+//        textView.setPadding(10, 10,10,10);
+//        textView.setLayoutParams(new LinearLayout.LayoutParams(
+//                LinearLayout.LayoutParams.MATCH_PARENT,
+//                LinearLayout.LayoutParams.MATCH_PARENT,
+//                1));
+//        CheckBox checkBox = new CheckBox(getApplicationContext());
+//        ImageButton imageButton = new ImageButton(getApplicationContext());
+//        imageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_delete_black_24dp));
+//        checkBox.setChecked(todo.getIsDone());
+//        textView.setText(todo.getTodoTitle());
+//        singleLL.addView(checkBox);
+//        singleLL.addView(textView);
+//        singleLL.addView(imageButton);
+//        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+//                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//
+//        layoutParams.setMargins(30, 20, 30, 0);
+//        linearLayout.addView(singleLL, layoutParams);
+//        final int finalI = i;
+//        textView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d("paul", "onClick: " + todoList.get(finalI).getTodoTitle());
+//                Log.d("paul", "onClick:i =  " + finalI);
+//            }
+//        });
+//    }
 
     private void addTodoToDb(String todoTitle) {
         String URL = GlobalData.getAddTodoUrl();
@@ -133,7 +179,10 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
                 if (code.equals("1")){
 //                    todoList.clear();
 //                    seeAllTodos(taskId);
+
+
                     Todo newTodo = new Todo(todoId, todoTitle, false);
+//                    myAdapter(newTodo, i);
                     todoList.add(newTodo);
                     todoAdapter.notifyDataSetChanged();
                 }
@@ -162,6 +211,8 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
 //        todoRv.setHasFixedSize(true);
         todoRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         todoList = new ArrayList<>();
+
+        linearLayout = findViewById(R.id.parentLL);
     }
 
     @Override
@@ -229,8 +280,9 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
                     e.printStackTrace();
                 }
                 if (code.equals("1") && n.equals("1")){
-                    Log.d("paul", "onResponse: Deleted done ");
+                    Log.d("paul", "onResponse: Deleted done " + position);
                     todoAdapter.delete(position);
+
 
                 }else {
                     ToastUtils.showToastError(DetailsTaskActivity.this, "Item Previously deleted");

@@ -4,95 +4,104 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Views.DetailsTaskActivity"
+    android:background="@color/colorLite"
     android:orientation="vertical"
-    android:background="@color/colorLite">
+    tools:context=".Views.DetailsTaskActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <LinearLayout
             android:id="@+id/viewTaskLL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <TextView
-                android:backgroundTint="@color/colorWhite"
                 android:id="@+id/detailsTaskTitleTV"
-                android:textColor="@color/colorPrimary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Your task title"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:background="@drawable/background_outer"
-                android:padding="15dp"
                 android:layout_margin="10dp"
-                />
-            <TextView
+                android:background="@drawable/background_outer"
                 android:backgroundTint="@color/colorWhite"
-                android:id="@+id/detailsTaskDescriptionTv"
+                android:hint="Your task title"
+                android:padding="15dp"
                 android:textColor="@color/colorPrimary"
-                android:textSize="12sp"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/detailsTaskDescriptionTv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Task description "
-                android:background="@drawable/background_outer"
-                android:padding="15dp"
-                android:gravity="top"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginBottom="10dp"
-                />
+                android:background="@drawable/background_outer"
+                android:backgroundTint="@color/colorWhite"
+                android:gravity="top"
+                android:hint="Task description "
+                android:padding="15dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/addLL"
-            android:layout_below="@+id/todoRv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginRight="15dp"
+            android:layout_below="@+id/todoRv"
             android:layout_marginLeft="15dp"
-            android:layout_marginBottom="20dp">
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/todoEt"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
                 android:background="@drawable/background_outer"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
-                android:textSize="12sp"
-                android:textColor="@color/colorGrey"
                 android:hint="add your list item..."
-                android:layout_marginRight="10dp"/>
+                android:paddingLeft="15dp"
+                android:paddingTop="15dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="15dp"
+                android:textColor="@color/colorGrey"
+                android:textSize="12sp" />
 
             <Button
                 android:id="@+id/addTodoIb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_add_black_24dp"
-                android:backgroundTint="@color/colorPrimary"
                 android:background="@drawable/background_outer"
-                android:textColor="@color/colorLite"
+                android:backgroundTint="@color/colorPrimary"
+                android:padding="5dp"
+                android:src="@drawable/ic_add_black_24dp"
                 android:text="add"
-                android:padding="5dp"/>
+                android:textColor="@color/colorLite" />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/parentLL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/addLL"
+            android:orientation="vertical" />
+
         <androidx.recyclerview.widget.RecyclerView
-            android:layout_below="@+id/viewTaskLL"
             android:id="@+id/todoRv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/viewTaskLL"
+            android:layout_marginLeft="20dp"
             android:layout_marginTop="10dp"
             android:layout_marginRight="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_width="match_parent"
-            android:layout_marginBottom="20dp"
-            android:layout_height="wrap_content"/>
+            android:layout_marginBottom="20dp" />
 
 
     </RelativeLayout>

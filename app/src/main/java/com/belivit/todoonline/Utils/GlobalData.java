@@ -10,8 +10,8 @@ public class GlobalData {
 
     private static String version = "";
     private static String sourceWithVersion;
-    private static String base_url = "http://10.0.2.2:5000";
-//    private static String base_url = "http://192.168.8.16:5000";
+//    private static String base_url = "http://10.0.2.2:5000";
+    private static String base_url = "http://192.168.8.16:5000";
 
 
     public static String getSourceWithVersion(Context context) {

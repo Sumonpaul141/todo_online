@@ -51,6 +51,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull final TodoAdapter.ViewHolder holder, final int position) {
 
         final Todo todo = todoList.get(position);
+        holder.setIsRecyclable(false);
         holder.todoTitleTv.setText(todo.getTodoTitle());
         holder.todoChecked.setChecked(todo.getIsDone());
         if (todo.getIsDone()){
@@ -58,6 +59,14 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
         }else {
             holder.todoTitleTv.setTextColor(Color.parseColor("#117999"));
         }
+
+        holder.todoTitleTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("paul", "delete: " + position);
+            }
+        });
+
         holder.todoChecked.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -79,10 +88,10 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
     }
 
     public void delete(int position){
+        Log.d("paul", "delete: " + position);
         int newPosition = position;
         todoList.remove(newPosition);
-        notifyItemRemoved(newPosition);
-        notifyItemRangeChanged(newPosition, todoList.size());
+        notifyDataSetChanged();
     }
 
     @Override
