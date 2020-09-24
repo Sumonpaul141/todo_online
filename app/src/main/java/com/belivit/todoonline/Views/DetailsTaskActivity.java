@@ -1,13 +1,18 @@
 package com.belivit.todoonline.Views;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -50,8 +55,6 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
     TodoAdapter todoAdapter;
 
     LinearLayout linearLayout;
-    int i;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,12 +180,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
                     e.printStackTrace();
                 }
                 if (code.equals("1")){
-//                    todoList.clear();
-//                    seeAllTodos(taskId);
-
-
                     Todo newTodo = new Todo(todoId, todoTitle, false);
-//                    myAdapter(newTodo, i);
                     todoList.add(newTodo);
                     todoAdapter.notifyDataSetChanged();
                 }
@@ -191,6 +189,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                ToastUtils.showToastError(DetailsTaskActivity.this, "Connection Error, Try again");
                 Log.d("paul", "addTodoToDb:  ResponseError:  " + error);
 
             }
@@ -248,10 +247,9 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("paul", "onTodoChecked:  ResponseError:  " + error);
-
+                ToastUtils.showToastError(DetailsTaskActivity.this, "Cannot check item without internet. Try again");
             }
         });
-
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(request);
     }
@@ -282,7 +280,71 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
                 if (code.equals("1") && n.equals("1")){
                     Log.d("paul", "onResponse: Deleted done " + position);
                     todoAdapter.delete(position);
+                    ToastUtils.showToastError(DetailsTaskActivity.this, "Deleted!");
+                }else {
+                    ToastUtils.showToastError(DetailsTaskActivity.this, "Item Previously deleted");
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                ToastUtils.showToastError(DetailsTaskActivity.this, "Cannot delete. Try again");
 
+            }
+        });
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(request);
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.task_menu_option, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.menu_edit:
+                ToastUtils.showToastOk(DetailsTaskActivity.this, "Edit selected");
+                break;
+            case R.id.menu_delete:
+                taskDelete(taskId);
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private void taskDelete(String taskId){
+        String URL = GlobalData.getDeleteTaskUrl();
+
+        JSONObject params = new JSONObject();
+        try {
+            params.put("taskId", taskId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("paul", "taskDelete : Params: " + params);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("paul", "taskDelete: Response: " + response.toString());
+                String deletedCount = "", n = "";
+                try {
+                    deletedCount = response.getString("deletedCount");
+                    n = response.getString("n");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (deletedCount.equals("1") && n.equals("1")){
+                    startActivity(new Intent(DetailsTaskActivity.this, MainActivity.class));
+                    finish();
 
                 }else {
                     ToastUtils.showToastError(DetailsTaskActivity.this, "Item Previously deleted");
@@ -297,6 +359,5 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         });
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(request);
-
     }
 }

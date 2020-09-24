@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/colorLite"
     tools:context=".Views.AddTaskActivity">
 
     <LinearLayout
@@ -20,7 +21,8 @@
             android:hint="Enter task title"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:background="@color/colorOffWhite"
+            android:background="@drawable/round_top"
+            android:backgroundTint="@color/colorWhite"
             android:padding="15dp"
             android:layout_margin="10dp"
             />
@@ -31,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Enter task Description"
-            android:background="@color/colorOffWhite"
+            android:background="@drawable/round_bottom"
             android:padding="15dp"
             android:lines="5"
             android:gravity="top"
@@ -53,7 +55,8 @@
             android:text="Save"
             android:textAllCaps="false"
             android:textColor="@color/colorWhite"
-            android:background="@drawable/round_background"/>
+            android:backgroundTint="@color/colorPrimary"
+            android:background="@drawable/background_outer"/>
     </LinearLayout>
 
     <LinearLayout

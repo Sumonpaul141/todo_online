@@ -1,9 +1,6 @@
 package com.belivit.todoonline.Adapters;
-
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,19 +9,11 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
-import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.belivit.todoonline.Interface.TodoCheckEvent;
 import com.belivit.todoonline.Models.Todo;
 import com.belivit.todoonline.R;
-import com.belivit.todoonline.Utils.ToastUtils;
-
-import org.w3c.dom.Text;
-
 import java.util.List;
 
 public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
@@ -93,6 +82,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
         todoList.remove(newPosition);
         notifyDataSetChanged();
     }
+
 
     @Override
     public int getItemCount() {

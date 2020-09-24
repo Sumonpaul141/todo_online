@@ -20,6 +20,7 @@ var user = mongoose.model("user", userSchema);
 var taskSchema = new mongoose.Schema({
 	taskTitle: String,
     taskDescription : String,
+    createdAt : Date,
     userId :{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User"
@@ -193,7 +194,7 @@ app.post("/add_task", function(req, res){
 
     }else{
 
-        var newTask = {taskTitle: Stitle, taskDescription: Sdesc, userId : Suser};
+        var newTask = {taskTitle: Stitle, taskDescription: Sdesc, "createdAt" : Date.now() , userId : Suser};
 
         task.create(newTask, function(err, newlyTask){
             if (err) {
@@ -288,9 +289,12 @@ app.post("/all_todo", function(req, res){
                 console.log("All todos send");
             }
     
-        });
+        }).sort({createdAt : -1});
     }
 });
+
+
+
 app.post("/check_todo", function(req, res){
 
     var StodoId = req.body.todoID;
@@ -344,6 +348,43 @@ app.post("/delete_todo", function(req, res){
     }
 });
 
+
+app.post("/delete_task", function(req, res){
+
+
+    var StaskId = req.body.taskId;
+    
+    if(StaskId == null || StaskId.trim() == ""){
+
+        var obj = {
+            "code" : "0",
+            "massage" : "Invalid parameter"
+        }
+        res.send(obj);
+        console.log("Invalid parameter");
+
+    }else{
+        task.deleteOne({"_id" : StaskId}, function(err, newlyTodo){
+            if (err) {
+                console.log(err);
+            }else{
+                if(newlyTodo.ok == 1 && newlyTodo.deletedCount ==1){
+                    todo.deleteMany({"taskId" : StaskId}, function(err, deleted){
+                        if (err) { 
+                            console.log(err);
+                        }else{
+                            console.log("Todo of that task deleted, Status send");
+                        }
+                
+                    });
+                }
+                res.send(newlyTodo); 
+                console.log("Task with all todo of that task deleted, Status send");
+            }
+    
+        });
+    }
+});
 
 app.get("/", function(req, res){
     res.send("this is the root page");
