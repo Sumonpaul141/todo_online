@@ -80,5 +80,10 @@ public class GlobalData {
         Log.d("paul", "getDeleteTodoUrl: " + url);
         return url;
     }
+    public static String getUpdateTaskUrl() {
+        String url = base_url + "/update_task";
+        Log.d("paul", "getUpdateTaskUrl: " + url);
+        return url;
+    }
 
 }

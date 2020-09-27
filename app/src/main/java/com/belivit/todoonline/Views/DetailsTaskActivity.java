@@ -1,12 +1,15 @@
 package com.belivit.todoonline.Views;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -120,39 +123,6 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(request);
     }
-
-
-//    public void myAdapter(Todo todo, final int i){
-//        LinearLayout singleLL = new LinearLayout(getApplicationContext());
-//        singleLL.setBackgroundColor(Color.WHITE);
-//        TextView textView = new TextView(getApplicationContext());
-//        textView.setPadding(10, 10,10,10);
-//        textView.setLayoutParams(new LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                1));
-//        CheckBox checkBox = new CheckBox(getApplicationContext());
-//        ImageButton imageButton = new ImageButton(getApplicationContext());
-//        imageButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_delete_black_24dp));
-//        checkBox.setChecked(todo.getIsDone());
-//        textView.setText(todo.getTodoTitle());
-//        singleLL.addView(checkBox);
-//        singleLL.addView(textView);
-//        singleLL.addView(imageButton);
-//        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-//
-//        layoutParams.setMargins(30, 20, 30, 0);
-//        linearLayout.addView(singleLL, layoutParams);
-//        final int finalI = i;
-//        textView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d("paul", "onClick: " + todoList.get(finalI).getTodoTitle());
-//                Log.d("paul", "onClick:i =  " + finalI);
-//            }
-//        });
-//    }
 
     private void addTodoToDb(String todoTitle) {
         String URL = GlobalData.getAddTodoUrl();
@@ -309,7 +279,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
 
         switch (item.getItemId()){
             case R.id.menu_edit:
-                ToastUtils.showToastOk(DetailsTaskActivity.this, "Edit selected");
+                editTask(taskId);
                 break;
             case R.id.menu_delete:
                 taskDelete(taskId);
@@ -317,6 +287,69 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void editTask(final String taskId) {
+
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+//        View view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.alert_edit, null);
+//        builder.setView(view);
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.alert_edit);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);
+        final EditText updateTitleEt = dialog.findViewById(R.id.updateTitleEt);
+        final EditText updateDescEt = dialog.findViewById(R.id.updateDescEt);
+        updateDescEt.setText(description);
+        updateTitleEt.setText(title);
+        Button cancelButton = dialog.findViewById(R.id.cencelButton);
+        Button updateButton = dialog.findViewById(R.id.updateButton);
+
+        updateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateTaskApiCall(taskId);
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+
+    }
+
+    private void updateTaskApiCall(String taskId) {
+        String URL = GlobalData.getUpdateTaskUrl();
+
+        JSONObject params = new JSONObject();
+        try {
+            params.put("taskId", taskId);
+            params.put("title", taskId);
+            params.put("description", taskId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("paul", "updateTaskApiCall : Params: " + params);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("paul", "updateTaskApiCall: Response: " + response.toString());
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                ToastUtils.showToastError(DetailsTaskActivity.this, "Cannot deleted. Try again");
+
+            }
+        });
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(request);
     }
 
 
