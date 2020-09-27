@@ -58,6 +58,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
     TodoAdapter todoAdapter;
 
     LinearLayout linearLayout;
+    Dialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +88,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
 
     private void seeAllTodos(String taskId) {
         String URL = GlobalData.getAllTodoUrl();
-
+        loadingDialogeSHow();
         JSONObject params = new JSONObject();
         try {
             params.put("taskId", taskId);
@@ -101,6 +102,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
             @Override
             public void onResponse(JSONObject response) {
                 Log.d("paul", "addTodoToDb: Response: " + response.toString());
+                mDialog.dismiss();
                 Gson gson = new Gson();
                 AllTodo allTodo = gson.fromJson(response.toString(), AllTodo.class);
                 todoList.addAll(Arrays.asList(allTodo.getAllTodo()));
@@ -114,6 +116,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                mDialog.dismiss();
                 Log.d("paul", "addTodoToDb:  ResponseError:  " + error);
 
             }
@@ -127,6 +130,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
     private void addTodoToDb(String todoTitle) {
         String URL = GlobalData.getAddTodoUrl();
 
+        loadingDialogeSHow();
         JSONObject params = new JSONObject();
         try {
             params.put("todoTitle", todoTitle);
@@ -141,6 +145,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
             @Override
             public void onResponse(JSONObject response) {
                 Log.d("paul", "addTodoToDb: Response: " + response.toString());
+                mDialog.dismiss();
                 String code = "", todoTitle = "", todoId = "";
                 try {
                     code = response.getString("code");
@@ -159,6 +164,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                mDialog.dismiss();
                 ToastUtils.showToastError(DetailsTaskActivity.this, "Connection Error, Try again");
                 Log.d("paul", "addTodoToDb:  ResponseError:  " + error);
 
@@ -188,6 +194,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
     public void onTodoChecked(final boolean isDone, final Todo todo, final int position) {
         String URL = GlobalData.getCheckTodoUrl();
 
+        loadingDialogeSHow();
         JSONObject params = new JSONObject();
         try {
             params.put("todoID", todo.getTodoId());
@@ -200,6 +207,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
             @Override
             public void onResponse(JSONObject response) {
                 Log.d("paul", "onTodoChecked: Response: " + response.toString());
+                mDialog.dismiss();
                 int code = 0;
                 try {
                     code = response.getInt("nModified");
@@ -216,6 +224,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                mDialog.dismiss();
                 Log.d("paul", "onTodoChecked:  ResponseError:  " + error);
                 ToastUtils.showToastError(DetailsTaskActivity.this, "Cannot check item without internet. Try again");
             }
@@ -227,6 +236,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
     @Override
     public void onTodoDelete(String todoId, final int position) {
         String URL = GlobalData.getDeleteTodoUrl();
+        loadingDialogeSHow();
 
         JSONObject params = new JSONObject();
         try {
@@ -239,6 +249,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
             @Override
             public void onResponse(JSONObject response) {
                 Log.d("paul", "onTodoDelete: Response: " + response.toString());
+                mDialog.dismiss();
                 String code = "", n = "";
                 try {
                     code = response.getString("deletedCount");
@@ -250,7 +261,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
                 if (code.equals("1") && n.equals("1")){
                     Log.d("paul", "onResponse: Deleted done " + position);
                     todoAdapter.delete(position);
-                    ToastUtils.showToastError(DetailsTaskActivity.this, "Deleted!");
+                    ToastUtils.showToastOk(DetailsTaskActivity.this, "Deleted!");
                 }else {
                     ToastUtils.showToastError(DetailsTaskActivity.this, "Item Previously deleted");
                 }
@@ -258,6 +269,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                mDialog.dismiss();
                 ToastUtils.showToastError(DetailsTaskActivity.this, "Cannot delete. Try again");
 
             }
@@ -265,6 +277,13 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(request);
 
+    }
+
+    private void loadingDialogeSHow() {
+        mDialog = new Dialog(this);
+        mDialog.setContentView(R.layout.alert_loading);
+        mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        mDialog.show();
     }
 
     @Override
@@ -290,10 +309,6 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
     }
 
     private void editTask(final String taskId) {
-
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-//        View view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.alert_edit, null);
-//        builder.setView(view);
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.alert_edit);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -301,15 +316,18 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         dialog.setCanceledOnTouchOutside(false);
         final EditText updateTitleEt = dialog.findViewById(R.id.updateTitleEt);
         final EditText updateDescEt = dialog.findViewById(R.id.updateDescEt);
-        updateDescEt.setText(description);
-        updateTitleEt.setText(title);
+        updateDescEt.setText(detailsTaskDescriptionTv.getText());
+        updateTitleEt.setText(detailsTaskTitleTV.getText());
         Button cancelButton = dialog.findViewById(R.id.cencelButton);
         Button updateButton = dialog.findViewById(R.id.updateButton);
 
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateTaskApiCall(taskId);
+                String utitle, udesc;
+                utitle = updateTitleEt.getText().toString().trim();
+                udesc = updateDescEt.getText().toString().trim();
+                updateTaskApiCall(taskId,utitle, udesc, dialog);
             }
         });
 
@@ -323,14 +341,14 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
 
     }
 
-    private void updateTaskApiCall(String taskId) {
+    private void updateTaskApiCall(String taskId, final String utitle, final String udesc, final Dialog dialog) {
         String URL = GlobalData.getUpdateTaskUrl();
-
+        loadingDialogeSHow();
         JSONObject params = new JSONObject();
         try {
             params.put("taskId", taskId);
-            params.put("title", taskId);
-            params.put("description", taskId);
+            params.put("title", utitle);
+            params.put("description", udesc);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -339,12 +357,31 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
             @Override
             public void onResponse(JSONObject response) {
                 Log.d("paul", "updateTaskApiCall: Response: " + response.toString());
+                mDialog.dismiss();
+                String nModified = "", n = "";
+                try {
+                    nModified = response.getString("nModified");
+                    n = response.getString("n");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (nModified.equals("1") && n.equals("1")){
+                    dialog.dismiss();
+                    ToastUtils.showToastOk(DetailsTaskActivity.this, "Task updated");
+                    detailsTaskTitleTV.setText(utitle);
+                    detailsTaskDescriptionTv.setText(udesc);
+                }else {
+                    dialog.dismiss();
+                    ToastUtils.showToastOk(DetailsTaskActivity.this, "Nothing updated");
+                }
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                ToastUtils.showToastError(DetailsTaskActivity.this, "Cannot deleted. Try again");
+                mDialog.dismiss();
+                ToastUtils.showToastError(DetailsTaskActivity.this, "Cannot update. \n Check internet connection");
 
             }
         });
@@ -380,7 +417,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
                     finish();
 
                 }else {
-                    ToastUtils.showToastError(DetailsTaskActivity.this, "Item Previously deleted");
+                    ToastUtils.showToastOk(DetailsTaskActivity.this, "Item Previously deleted");
                 }
             }
         }, new Response.ErrorListener() {

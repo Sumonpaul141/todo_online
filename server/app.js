@@ -386,6 +386,36 @@ app.post("/delete_task", function(req, res){
     }
 });
 
+
+app.post("/update_task", function(req, res){
+
+
+    var StaskId = req.body.taskId;
+    var StaskTitle = req.body.title;
+    var StaskDescription = req.body.description;
+    
+    if(StaskId == null || StaskId.trim() == ""){
+
+        var obj = {
+            "code" : "0",
+            "massage" : "Invalid parameter"
+        }
+        res.send(obj);
+        console.log("Invalid parameter");
+
+    }else{
+        task.updateOne({"_id" : StaskId},{taskTitle : StaskTitle, taskDescription : StaskDescription} , function(err, newlyTodo){
+            if (err) {
+                console.log(err);
+            }else{
+                res.send(newlyTodo); 
+                console.log("Task updated, Status send");
+            }
+    
+        });
+    }
+});
+
 app.get("/", function(req, res){
     res.send("this is the root page");
 });
