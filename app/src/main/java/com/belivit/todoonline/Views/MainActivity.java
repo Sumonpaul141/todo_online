@@ -21,7 +21,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     Dialog mDialog;
     LinearLayout noInternetLL;
     String userId;
+    TextView mainErrorTv;
 
 
     @Override
@@ -87,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
     private void getAllTheTask(String userId) {
         allTaskRv.setVisibility(View.VISIBLE);
         noInternetLL.setVisibility(View.GONE);
+
+
         loadingDialogeSHow();
         String URL = GlobalData.getAllTasknUrl();
         JSONObject params = new JSONObject();
@@ -114,6 +119,13 @@ public class MainActivity extends AppCompatActivity {
                 mDialog.dismiss();
                 allTaskRv.setVisibility(View.GONE);
                 noInternetLL.setVisibility(View.VISIBLE);
+                if (error.toString().toLowerCase().contains("noconnectionerror")){
+                    mainErrorTv.setText("No internet! Check your internet connection.");
+                }else if(error.toString().toLowerCase().contains("timeout")){
+                    mainErrorTv.setText("Request timeout. Server not responding!");
+                }else {
+                    mainErrorTv.setText("Error in network. Please try again later.");
+                }
                 Log.d("paul", "getAllTheTask: ErrorResponse:  " + error);
 
             }
@@ -126,8 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
         addFabIv = findViewById(R.id.addFabIv);
-
-
+        mainErrorTv = findViewById(R.id.mainErrorTv);
         allTaskRv = findViewById(R.id.allTaskRv);
         allTaskRv.setLayoutManager(new LinearLayoutManager(this));
 //        allTaskRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
