@@ -108,15 +108,19 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
                 todoList.addAll(Arrays.asList(allTodo.getAllTodo()));
                 todoAdapter = new TodoAdapter(todoList, DetailsTaskActivity.this, DetailsTaskActivity.this);
                 todoRv.setAdapter(todoAdapter);
-//
-//                for (i = 0; i< todoList.size() ; i++){
-//                    myAdapter(todoList.get(i), i);
-//                }
+
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 mDialog.dismiss();
+                if (error.toString().toLowerCase().contains("connectionerror")){
+                    ToastUtils.showToastError(DetailsTaskActivity.this,"No internet! Check your internet connection.");
+                }else if(error.toString().toLowerCase().contains("timeout")){
+                    ToastUtils.showToastError(DetailsTaskActivity.this,"Request timeout. Server not responding!");
+                }else {
+                    ToastUtils.showToastError(DetailsTaskActivity.this,"Error in network. Please try again later.");
+                }
                 Log.d("paul", "addTodoToDb:  ResponseError:  " + error);
 
             }
