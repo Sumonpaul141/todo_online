@@ -42,6 +42,7 @@ import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -283,6 +284,11 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
 
     }
 
+    @Override
+    public void onTodoUpdate(Todo todo, int position) {
+        editTodo(todo, position);
+    }
+
     private void loadingDialogeSHow() {
         mDialog = new Dialog(this);
         mDialog.setContentView(R.layout.alert_loading);
@@ -320,18 +326,24 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         dialog.setCanceledOnTouchOutside(false);
         final EditText updateTitleEt = dialog.findViewById(R.id.updateTitleEt);
         final EditText updateDescEt = dialog.findViewById(R.id.updateDescEt);
+        final TextView updateTopicTV = dialog.findViewById(R.id.updateTopicTV);
         updateDescEt.setText(detailsTaskDescriptionTv.getText());
         updateTitleEt.setText(detailsTaskTitleTV.getText());
+        updateTopicTV.setText("Edit task :");
         Button cancelButton = dialog.findViewById(R.id.cencelButton);
         Button updateButton = dialog.findViewById(R.id.updateButton);
-
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String utitle, udesc;
                 utitle = updateTitleEt.getText().toString().trim();
                 udesc = updateDescEt.getText().toString().trim();
-                updateTaskApiCall(taskId,utitle, udesc, dialog);
+                if (utitle.isEmpty() || udesc.isEmpty()){
+                    ToastUtils.showToastError(DetailsTaskActivity.this, "Fill both fields");
+                }else {
+                    updateTaskApiCall(taskId,utitle, udesc, dialog);
+                }
+
             }
         });
 
@@ -341,8 +353,42 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
                 dialog.dismiss();
             }
         });
+    }
 
 
+    private void editTodo(final Todo todo, final int position) {
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.alert_edit);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);
+        final EditText updateTitleEt = dialog.findViewById(R.id.updateTitleEt);
+        final EditText updateDescEt = dialog.findViewById(R.id.updateDescEt);
+        final TextView updateTopicTV = dialog.findViewById(R.id.updateTopicTV);
+        updateTitleEt.setText(todo.getTodoTitle());
+        updateDescEt.setVisibility(View.GONE);
+        updateTopicTV.setText("Edit todo :");
+        Button cancelButton = dialog.findViewById(R.id.cencelButton);
+        Button updateButton = dialog.findViewById(R.id.updateButton);
+
+        updateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String utitle;
+                utitle = updateTitleEt.getText().toString().trim();
+                if (utitle.isEmpty()){
+                    ToastUtils.showToastError(DetailsTaskActivity.this, "Can't be empty");
+                }else {
+                    updateTodoApiCall(todo.getTodoId(), utitle, dialog, position);
+                }
+            }
+        });
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
     }
 
     private void updateTaskApiCall(String taskId, final String utitle, final String udesc, final Dialog dialog) {
@@ -375,6 +421,53 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
                     ToastUtils.showToastOk(DetailsTaskActivity.this, "Task updated");
                     detailsTaskTitleTV.setText(utitle);
                     detailsTaskDescriptionTv.setText(udesc);
+                }else {
+                    dialog.dismiss();
+                    ToastUtils.showToastOk(DetailsTaskActivity.this, "Nothing updated");
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                mDialog.dismiss();
+                ToastUtils.showToastError(DetailsTaskActivity.this, "Cannot update. \n Check internet connection");
+
+            }
+        });
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(request);
+    }
+
+
+    private void updateTodoApiCall(String todoId, final String utitle, final Dialog dialog, final int position) {
+        String URL = GlobalData.getUpdateTodoUrl();
+        loadingDialogeSHow();
+        JSONObject params = new JSONObject();
+        try {
+            params.put("todoId", todoId);
+            params.put("todoTitle", utitle);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("paul", "updateTodoApiCall : Params: " + params);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("paul", "updateTodoApiCall: Response: " + response.toString());
+                mDialog.dismiss();
+                String nModified = "", n = "";
+                try {
+                    nModified = response.getString("nModified");
+                    n = response.getString("n");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (nModified.equals("1") && n.equals("1")){
+                    dialog.dismiss();
+                    ToastUtils.showToastOk(DetailsTaskActivity.this, "Todo updated");
+                    todoAdapter.update(position, utitle);
                 }else {
                     dialog.dismiss();
                     ToastUtils.showToastOk(DetailsTaskActivity.this, "Nothing updated");

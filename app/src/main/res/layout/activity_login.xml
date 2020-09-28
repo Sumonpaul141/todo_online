@@ -8,6 +8,8 @@
     tools:context=".Views.LoginActivity">
 
     <LinearLayout
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -46,6 +48,7 @@
             android:background="@drawable/background_outer"
             android:backgroundTint="@color/colorPrimary"
             android:hint="Sign In"
+            android:inputType="textPassword"
             android:textColorHint="@color/colorWhite"
             android:layout_margin="10dp"/>
 

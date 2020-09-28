@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.belivit.todoonline.Interface.TodoCheckEvent;
 import com.belivit.todoonline.Models.Todo;
 import com.belivit.todoonline.R;
+import com.belivit.todoonline.Utils.ToastUtils;
+
 import java.util.List;
 
 public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
@@ -49,10 +51,11 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
             holder.todoTitleTv.setTextColor(Color.parseColor("#117999"));
         }
 
-        holder.todoTitleTv.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
-                Log.d("paul", "delete: " + position);
+            public boolean onLongClick(View v) {
+                todoCheckEvent.onTodoUpdate(todo, position);
+                return true;
             }
         });
 
@@ -77,9 +80,13 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
     }
 
     public void delete(int position){
-        Log.d("paul", "delete: " + position);
         int newPosition = position;
         todoList.remove(newPosition);
+        notifyDataSetChanged();
+    }
+
+    public void update(int position, String title){
+        todoList.get(position).setTodoTitle(title);
         notifyDataSetChanged();
     }
 

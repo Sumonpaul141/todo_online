@@ -5,6 +5,17 @@
     android:orientation="vertical"
     android:backgroundTint="@color/colorLite"
     android:background="@drawable/background_outer">
+    <TextView
+        android:id="@+id/updateTopicTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Edit "
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimary"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"/>
     <EditText
         android:textSize="14sp"
         android:id="@+id/updateTitleEt"

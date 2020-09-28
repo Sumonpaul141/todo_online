@@ -2,7 +2,10 @@ package com.belivit.todoonline.Views;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +22,7 @@ import com.android.volley.toolbox.Volley;
 import com.belivit.todoonline.Models.UserInfo;
 import com.belivit.todoonline.R;
 import com.belivit.todoonline.Utils.GlobalData;
+import com.belivit.todoonline.Utils.ToastUtils;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -27,6 +31,7 @@ import org.json.JSONObject;
 public class RegistrationActivity extends AppCompatActivity {
     EditText regConfirmPasswordEt, regPasswordEt, regNameEt, regEmailEt;
     Button regCreateAccountBtn, regSignInBtn;
+    Dialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +68,16 @@ public class RegistrationActivity extends AppCompatActivity {
 
     }
 
+    private void loadingDialogeSHow() {
+        mDialog = new Dialog(this);
+        mDialog.setContentView(R.layout.alert_loading);
+        mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        mDialog.show();
+    }
 
     private void registerUser(String email, String password, String name) {
         String URL = GlobalData.getRegistrationUrl();
+        loadingDialogeSHow();
         JSONObject rewParams = new JSONObject();
         try {
             rewParams.put("email", email);
@@ -82,6 +94,7 @@ public class RegistrationActivity extends AppCompatActivity {
             public void onResponse(JSONObject response) {
                 Log.d("paul", "onResponse: Response: " + response.toString());
                 Gson gson = new Gson();
+                mDialog.dismiss();
                 UserInfo info = gson.fromJson(response.toString(), UserInfo.class);
                 if (info.getCode().equals("1")){
                     startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
@@ -94,7 +107,15 @@ public class RegistrationActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                mDialog.dismiss();
                 Log.d("paul", "onResponse: Error:  " + error);
+                if (error.toString().toLowerCase().contains("noconnectionerror")){
+                    ToastUtils.showToastError(RegistrationActivity.this,"No internet! Check your internet connection.");
+                }else if(error.toString().toLowerCase().contains("timeout")){
+                    ToastUtils.showToastError(RegistrationActivity.this,"Request timeout. Server not responding!");
+                }else {
+                    ToastUtils.showToastError(RegistrationActivity.this,"Error in network. Please try again later.");
+                }
 
             }
         });
