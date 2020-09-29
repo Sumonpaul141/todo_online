@@ -2,7 +2,10 @@ package com.belivit.todoonline.Views;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +29,7 @@ import org.json.JSONObject;
 public class AddTaskActivity extends AppCompatActivity {
     EditText addtitleEt, addDescEt;
     Button addTaskBtn;
+    Dialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +61,17 @@ public class AddTaskActivity extends AppCompatActivity {
         });
     }
 
+    private void loadingDialogeSHow() {
+        mDialog = new Dialog(this);
+        mDialog.setContentView(R.layout.alert_loading);
+        mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        mDialog.show();
+    }
+
     private void saveTaskToDB(String title, String desc, String userId) {
 
         String URL = GlobalData.getAddTasknUrl();
-
+        loadingDialogeSHow();
         JSONObject params = new JSONObject();
         try {
             params.put("taskTitle", title);
@@ -75,6 +86,7 @@ public class AddTaskActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 Log.d("paul", "saveTaskToDB: Response: " + response.toString());
+                mDialog.dismiss();
                 String code = "";
                 try {
                     code = response.getString("code");
@@ -91,6 +103,7 @@ public class AddTaskActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                mDialog.dismiss();
                 Log.d("paul", "saveTaskToDB:  ResponseError:  " + error);
 
             }
