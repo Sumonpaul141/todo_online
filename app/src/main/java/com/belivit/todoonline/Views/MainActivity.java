@@ -1,15 +1,18 @@
 package com.belivit.todoonline.Views;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -36,6 +39,7 @@ import com.belivit.todoonline.Models.AllTask;
 import com.belivit.todoonline.Models.Task;
 import com.belivit.todoonline.R;
 import com.belivit.todoonline.Utils.GlobalData;
+import com.belivit.todoonline.Utils.RecyclerViewSwipeDecorator;
 import com.belivit.todoonline.Utils.SharedPref;
 import com.belivit.todoonline.Utils.ToastUtils;
 import com.google.gson.Gson;
@@ -45,6 +49,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import okhttp3.internal.Util;
@@ -58,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout noInternetLL;
     String userId;
     TextView mainErrorTv;
+    SwipeRefreshLayout mainSwipeRef;
 
 
     @Override
@@ -78,9 +85,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT ) {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, ItemTouchHelper.LEFT ) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                int fromPosition = viewHolder.getAdapterPosition();
+                int toPosition = target.getAdapterPosition();
+                Collections.swap(taskList, fromPosition, toPosition);
+                recyclerView.getAdapter().notifyItemMoved(fromPosition, toPosition);
                 return false;
             }
 
@@ -88,9 +99,39 @@ public class MainActivity extends AppCompatActivity {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
                 String taskIDForDelete = taskList.get(position).getTaskId();
-                taskDelete(taskIDForDelete);
+                taskDelete(taskIDForDelete, position);
+            }
+
+
+            @Override
+            public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
+                super.onSelectedChanged(viewHolder, actionState);
+                final boolean swiping = actionState == ItemTouchHelper.ACTION_STATE_DRAG;
+                Log.d("paul", "onSelectedChanged: " + swiping);
+                mainSwipeRef.setEnabled(!swiping);
+            }
+
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                new RecyclerViewSwipeDecorator.Builder(c,recyclerView, viewHolder,dX, dY, actionState, isCurrentlyActive)
+                        .addSwipeLeftBackgroundColor(Color.parseColor("#f5424b"))
+                        .addSwipeLeftActionIcon(R.drawable.ic_delete_black_24dp)
+                        .setSwipeLeftActionIconTint(R.color.colorWhite)
+                        .create()
+                        .decorate();
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+
             }
         }).attachToRecyclerView(allTaskRv);
+
+
+        mainSwipeRef.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshLayout(userId);
+                mainSwipeRef.setRefreshing(false);
+            }
+        });
     }
 
     void logout(){
@@ -98,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(MainActivity.this, LoginActivity.class));
         finish();
     }
+
     void refreshLayout(String userId){
         taskList.clear();
         getAllTheTask(userId);
@@ -106,8 +148,6 @@ public class MainActivity extends AppCompatActivity {
     private void getAllTheTask(String userId) {
         allTaskRv.setVisibility(View.VISIBLE);
         noInternetLL.setVisibility(View.GONE);
-
-
         loadingDialogeSHow();
         String URL = GlobalData.getAllTasknUrl();
         JSONObject params = new JSONObject();
@@ -125,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
                 Gson gson = new Gson();
                 AllTask allTask = gson.fromJson(response.toString(), AllTask.class);
                 taskList.addAll(Arrays.asList(allTask.getAllTask()));
+                Collections.reverse(taskList);
                 taskAdapter = new TaskAdapter(taskList, MainActivity.this);
                 allTaskRv.setAdapter(taskAdapter);
 
@@ -157,9 +198,9 @@ public class MainActivity extends AppCompatActivity {
         mainErrorTv = findViewById(R.id.mainErrorTv);
         allTaskRv = findViewById(R.id.allTaskRv);
         allTaskRv.setLayoutManager(new LinearLayoutManager(this));
-//        allTaskRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
         taskList = new ArrayList<>();
         noInternetLL = findViewById(R.id.noInternetLL);
+        mainSwipeRef = findViewById(R.id.mainSwipeRef);
     }
 
     private void loadingDialogeSHow() {
@@ -184,16 +225,13 @@ public class MainActivity extends AppCompatActivity {
             case R.id.main_logout:
                 logout();
                 break;
-            case R.id.main_refresh:
-                refreshLayout(userId);
-                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
 
-    private void taskDelete(String taskId){
+    private void taskDelete(String taskId, final int position){
         String URL = GlobalData.getDeleteTaskUrl();
         loadingDialogeSHow();
         JSONObject params = new JSONObject();
@@ -217,7 +255,8 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 if (deletedCount.equals("1") && n.equals("1")){
-                    ToastUtils.showToastOk(MainActivity.this, "Item  deleted");
+                    taskList.remove(position);
+                    taskAdapter.notifyItemRemoved(position);
 
                 }else {
                     ToastUtils.showToastOk(MainActivity.this, "Item Previously deleted");

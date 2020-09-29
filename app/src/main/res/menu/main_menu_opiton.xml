@@ -3,10 +3,4 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:title="Logout"
         android:id="@+id/main_logout"/>
-    <item android:title="refresh"
-        android:id="@+id/main_refresh"
-        app:itemIconTint="@color/colorWhite"
-        android:icon="@drawable/ic_refresh_black_24dp"
-        app:showAsAction="always"
-        />
 </menu>
