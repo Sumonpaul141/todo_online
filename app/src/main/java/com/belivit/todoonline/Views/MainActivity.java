@@ -3,6 +3,7 @@ package com.belivit.todoonline.Views;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -75,6 +76,21 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, AddTaskActivity.class));
             }
         });
+
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT ) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                String taskIDForDelete = taskList.get(position).getTaskId();
+                taskDelete(taskIDForDelete);
+            }
+        }).attachToRecyclerView(allTaskRv);
     }
 
     void logout(){
@@ -174,5 +190,48 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    private void taskDelete(String taskId){
+        String URL = GlobalData.getDeleteTaskUrl();
+        loadingDialogeSHow();
+        JSONObject params = new JSONObject();
+        try {
+            params.put("taskId", taskId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("paul", "taskDelete : Params: " + params);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, params, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("paul", "taskDelete: Response: " + response.toString());
+                String deletedCount = "", n = "";
+                mDialog.dismiss();
+                try {
+                    deletedCount = response.getString("deletedCount");
+                    n = response.getString("n");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (deletedCount.equals("1") && n.equals("1")){
+                    ToastUtils.showToastOk(MainActivity.this, "Item  deleted");
+
+                }else {
+                    ToastUtils.showToastOk(MainActivity.this, "Item Previously deleted");
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                mDialog.dismiss();
+                ToastUtils.showToastError(MainActivity.this, "Cannot deleted. Try again");
+
+            }
+        });
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(request);
     }
 }
