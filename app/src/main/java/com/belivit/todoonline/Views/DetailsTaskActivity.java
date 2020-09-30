@@ -314,10 +314,17 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
             case R.id.menu_delete:
                 deleteTaskAlert();
                 break;
+            case R.id.menu_archive:
+                archiveTask(taskId);
+                break;
         }
-
         return super.onOptionsItemSelected(item);
     }
+
+    private void archiveTask(String taskId) {
+        ToastUtils.showToastOk(DetailsTaskActivity.this, "This task will be archived");
+    }
+
 
     private void deleteTaskAlert() {
         AlertDialog.Builder dialog = new AlertDialog.Builder(DetailsTaskActivity.this);

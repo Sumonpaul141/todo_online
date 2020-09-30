@@ -11,8 +11,8 @@ public class GlobalData {
     private static String version = "";
     private static String sourceWithVersion;
     //    private static String base_url = "http://10.0.2.2:8080";
-    private static String base_url = "http://192.168.8.16:8080";
-//    private static String base_url = "https://todo-track-on.herokuapp.com";
+//    private static String base_url = "http://192.168.8.16:8080";
+    private static String base_url = "https://todo-track-on.herokuapp.com";
 
 
     public static String getSourceWithVersion(Context context) {
@@ -89,6 +89,11 @@ public class GlobalData {
     public static String getUpdateTodoUrl() {
         String url = base_url + "/update_todo";
         Log.d("paul", "getUpdateTodoUrl: " + url);
+        return url;
+    }
+    public static String getArchiveTaskUrl() {
+        String url = base_url + "/archive_task";
+        Log.d("paul", "getArchiveTaskUrl: " + url);
         return url;
     }
 

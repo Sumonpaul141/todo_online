@@ -7,6 +7,8 @@ public class Task {
 
     private String taskId;
 
+    private boolean isArchive;
+
     public String getDescreiption ()
     {
         return descreiption;
@@ -14,6 +16,14 @@ public class Task {
 
     public String getTaskId() {
         return taskId;
+    }
+
+    public boolean isArchive() {
+        return isArchive;
+    }
+
+    public void setArchive(boolean archive) {
+        isArchive = archive;
     }
 
     public void setTaskId(String taskId) {
@@ -36,8 +46,12 @@ public class Task {
     }
 
     @Override
-    public String toString()
-    {
-        return "ClassPojo [descreiption = "+descreiption+", title = "+title+"]";
+    public String toString() {
+        return "Task{" +
+                "descreiption='" + descreiption + '\'' +
+                ", title='" + title + '\'' +
+                ", taskId='" + taskId + '\'' +
+                ", isArchive=" + isArchive +
+                '}';
     }
 }

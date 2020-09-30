@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         String name = SharedPref.getShared(MainActivity.this, SharedPref.USER_NAME);
         userId = SharedPref.getShared(MainActivity.this, SharedPref.USER_ID);
         setTitle("{ " + name + " }" + " your Tasks");
-        getAllTheTask(userId);
+        getAllTheTask(userId, false);
 
         addFabIv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0 ) {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, ItemTouchHelper.LEFT ) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 int fromPosition = viewHolder.getAdapterPosition();
@@ -98,9 +98,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-//                int position = viewHolder.getAdapterPosition();
-//                String taskIDForDelete = taskList.get(position).getTaskId();
-//                taskDelete(taskIDForDelete, position);
+                int position = viewHolder.getAdapterPosition();
+                String taskIDForDelete = taskList.get(position).getTaskId();
+                taskArchive(taskIDForDelete, taskList.get(position).isArchive(), position);
             }
 
 
@@ -109,27 +109,26 @@ public class MainActivity extends AppCompatActivity {
                 super.onSelectedChanged(viewHolder, actionState);
                 final boolean draging = actionState == ItemTouchHelper.ACTION_STATE_DRAG;
                 mainSwipeRef.setEnabled(!draging);
-//                swiping = actionState == ItemTouchHelper.ACTION_STATE_SWIPE;
-//                Log.d("paul", "onSelectedChanged: drag : " + swiping);
+                swiping = actionState == ItemTouchHelper.ACTION_STATE_SWIPE;
+                Log.d("paul", "onSelectedChanged: drag : " + swiping);
 
 
             }
 
-//            @Override
-//            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-//                if (swiping){
-//                    viewHolder.itemView.setBackgroundColor(Color.parseColor("#8C999C"));
-//                }else {
-//                    viewHolder.itemView.setBackgroundColor(Color.parseColor("#dee7e9"));
-//                }
-//                new RecyclerViewSwipeDecorator.Builder(c,recyclerView, viewHolder,dX, dY, actionState, isCurrentlyActive)
-//                        .addSwipeLeftBackgroundColor(Color.parseColor("#8C999C"))
-//                        .addSwipeLeftActionIcon(R.drawable.ic_delete_black_24dp)
-//                        .setSwipeLeftActionIconTint(R.color.colorWhite)
-//                        .create()
-//                        .decorate();
-//                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-//            }
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                if (swiping){
+                    viewHolder.itemView.setBackgroundColor(Color.parseColor("#8C999C"));
+                }else {
+                    viewHolder.itemView.setBackgroundColor(Color.parseColor("#dee7e9"));
+                }
+                new RecyclerViewSwipeDecorator.Builder(c,recyclerView, viewHolder,dX, dY, actionState, isCurrentlyActive)
+                        .addSwipeLeftBackgroundColor(Color.parseColor("#8C999C"))
+                        .addSwipeLeftActionIcon(R.drawable.ic_archive_black_24dp)
+                        .create()
+                        .decorate();
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
         }).attachToRecyclerView(allTaskRv);
 
 
@@ -150,10 +149,10 @@ public class MainActivity extends AppCompatActivity {
 
     void refreshLayout(String userId){
         taskList.clear();
-        getAllTheTask(userId);
+        getAllTheTask(userId, false);
     }
 
-    private void getAllTheTask(String userId) {
+    private void getAllTheTask(String userId, boolean isArchive) {
         allTaskRv.setVisibility(View.VISIBLE);
         noInternetLL.setVisibility(View.GONE);
         loadingDialogeSHow();
@@ -161,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
         JSONObject params = new JSONObject();
         try {
             params.put("userId", userId);
+            params.put("isArchive", isArchive);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -233,18 +233,28 @@ public class MainActivity extends AppCompatActivity {
             case R.id.main_logout:
                 logout();
                 break;
+            case R.id.main_archive:
+                archiveTask();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
 
-    private void taskDelete(String taskId, final int position){
-        String URL = GlobalData.getDeleteTaskUrl();
+    private void archiveTask() {
+        taskList.clear();
+        getAllTheTask(userId, true);
+    }
+
+    private void taskArchive(String taskId, boolean isArchive, final int position){
+        String URL = GlobalData.getArchiveTaskUrl();
         loadingDialogeSHow();
         JSONObject params = new JSONObject();
         try {
             params.put("taskId", taskId);
+            params.put("isArchive", !isArchive);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -253,21 +263,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 Log.d("paul", "taskDelete: Response: " + response.toString());
-                String deletedCount = "", n = "";
                 mDialog.dismiss();
+                String nModified = "", n = "";
                 try {
-                    deletedCount = response.getString("deletedCount");
+                    nModified = response.getString("nModified");
                     n = response.getString("n");
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                if (deletedCount.equals("1") && n.equals("1")){
+                if (nModified.equals("1") && n.equals("1")){
+                    ToastUtils.showToastOk(MainActivity.this, "Done");
                     taskList.remove(position);
                     taskAdapter.notifyItemRemoved(position);
-
                 }else {
-                    ToastUtils.showToastOk(MainActivity.this, "Item Previously deleted");
+                    ToastUtils.showToastOk(MainActivity.this, "Nothing archived");
                 }
             }
         }, new Response.ErrorListener() {

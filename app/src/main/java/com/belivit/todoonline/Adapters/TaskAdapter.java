@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.belivit.todoonline.Models.Task;
 import com.belivit.todoonline.R;
+import com.belivit.todoonline.Utils.ToastUtils;
 import com.belivit.todoonline.Views.DetailsTaskActivity;
 
 import java.util.List;
@@ -49,6 +51,19 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
                 context.startActivity(intent);
             }
         });
+
+        if (task.isArchive()){
+            holder.itemUnArchivedIV.setVisibility(View.VISIBLE);
+        }else {
+            holder.itemUnArchivedIV.setVisibility(View.GONE);
+        }
+
+        holder.itemUnArchivedIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToastUtils.showToastOk(context, "UnArchived will be called");
+            }
+        });
     }
 
     @Override
@@ -58,10 +73,12 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView title, description;
+        ImageView itemUnArchivedIV;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.itemTitleTV);
             description = itemView.findViewById(R.id.itemDescriptionTV);
+            itemUnArchivedIV = itemView.findViewById(R.id.itemUnArchivedIV);
         }
     }
 }
