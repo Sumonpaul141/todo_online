@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -311,11 +312,31 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
                 editTask(taskId);
                 break;
             case R.id.menu_delete:
-                taskDelete(taskId);
+                deleteTaskAlert();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteTaskAlert() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(DetailsTaskActivity.this);
+        dialog.setTitle("Delete");
+        dialog.setMessage("Are you sure you want to delete this whole task? That can't be undone anymore.");
+        dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                taskDelete(taskId);
+                dialog.dismiss();
+            }
+        });
+        dialog.setNegativeButton("Ow No!!", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 
     private void editTask(final String taskId) {
@@ -489,7 +510,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
 
     private void taskDelete(String taskId){
         String URL = GlobalData.getDeleteTaskUrl();
-
+        loadingDialogeSHow();
         JSONObject params = new JSONObject();
         try {
             params.put("taskId", taskId);
@@ -501,6 +522,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
             @Override
             public void onResponse(JSONObject response) {
                 Log.d("paul", "taskDelete: Response: " + response.toString());
+                mDialog.dismiss();
                 String deletedCount = "", n = "";
                 try {
                     deletedCount = response.getString("deletedCount");
@@ -520,6 +542,7 @@ public class DetailsTaskActivity extends AppCompatActivity implements TodoCheckE
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                mDialog.dismiss();
                 ToastUtils.showToastError(DetailsTaskActivity.this, "Cannot deleted. Try again");
 
             }
