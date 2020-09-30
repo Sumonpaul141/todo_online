@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     String userId;
     TextView mainErrorTv;
     SwipeRefreshLayout mainSwipeRef;
+    boolean swiping;
 
 
     @Override
@@ -85,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, ItemTouchHelper.LEFT ) {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0 ) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 int fromPosition = viewHolder.getAdapterPosition();
@@ -97,31 +98,38 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                int position = viewHolder.getAdapterPosition();
-                String taskIDForDelete = taskList.get(position).getTaskId();
-                taskDelete(taskIDForDelete, position);
+//                int position = viewHolder.getAdapterPosition();
+//                String taskIDForDelete = taskList.get(position).getTaskId();
+//                taskDelete(taskIDForDelete, position);
             }
 
 
             @Override
             public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
                 super.onSelectedChanged(viewHolder, actionState);
-                final boolean swiping = actionState == ItemTouchHelper.ACTION_STATE_DRAG;
-                Log.d("paul", "onSelectedChanged: " + swiping);
-                mainSwipeRef.setEnabled(!swiping);
-            }
+                final boolean draging = actionState == ItemTouchHelper.ACTION_STATE_DRAG;
+                mainSwipeRef.setEnabled(!draging);
+//                swiping = actionState == ItemTouchHelper.ACTION_STATE_SWIPE;
+//                Log.d("paul", "onSelectedChanged: drag : " + swiping);
 
-            @Override
-            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-                new RecyclerViewSwipeDecorator.Builder(c,recyclerView, viewHolder,dX, dY, actionState, isCurrentlyActive)
-                        .addSwipeLeftBackgroundColor(Color.parseColor("#f5424b"))
-                        .addSwipeLeftActionIcon(R.drawable.ic_delete_black_24dp)
-                        .setSwipeLeftActionIconTint(R.color.colorWhite)
-                        .create()
-                        .decorate();
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
 
             }
+
+//            @Override
+//            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+//                if (swiping){
+//                    viewHolder.itemView.setBackgroundColor(Color.parseColor("#8C999C"));
+//                }else {
+//                    viewHolder.itemView.setBackgroundColor(Color.parseColor("#dee7e9"));
+//                }
+//                new RecyclerViewSwipeDecorator.Builder(c,recyclerView, viewHolder,dX, dY, actionState, isCurrentlyActive)
+//                        .addSwipeLeftBackgroundColor(Color.parseColor("#8C999C"))
+//                        .addSwipeLeftActionIcon(R.drawable.ic_delete_black_24dp)
+//                        .setSwipeLeftActionIconTint(R.color.colorWhite)
+//                        .create()
+//                        .decorate();
+//                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+//            }
         }).attachToRecyclerView(allTaskRv);
 
 
