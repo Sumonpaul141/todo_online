@@ -21,6 +21,7 @@
 
         <LinearLayout
             android:id="@+id/noInternetLL"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -38,6 +39,29 @@
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:text="No Internet!! "
+                android:textAlignment="center"
+                android:textColor="@color/colorGrey"
+                android:textSize="14sp" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/noDataLL"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="100dp"
+                android:src="@drawable/ic_folder_open_black_24dp"
+                android:tint="@color/colorGrey" />
+
+            <TextView
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="No task available to show. Create a new task."
                 android:textAlignment="center"
                 android:textColor="@color/colorGrey"
                 android:textSize="14sp" />

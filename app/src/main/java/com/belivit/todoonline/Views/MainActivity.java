@@ -62,10 +62,12 @@ public class MainActivity extends AppCompatActivity {
     TaskAdapter taskAdapter;
     Dialog mDialog;
     LinearLayout noInternetLL;
+    LinearLayout noDataLL;
     String userId;
     TextView mainErrorTv;
     SwipeRefreshLayout mainSwipeRef;
     boolean swiping;
+    boolean showingIsArchived = false;
 
 
     @Override
@@ -149,12 +151,15 @@ public class MainActivity extends AppCompatActivity {
 
     void refreshLayout(String userId){
         taskList.clear();
+        showingIsArchived = false;
         getAllTheTask(userId, false);
     }
 
     private void getAllTheTask(String userId, boolean isArchive) {
+
         allTaskRv.setVisibility(View.VISIBLE);
         noInternetLL.setVisibility(View.GONE);
+        noDataLL.setVisibility(View.GONE);
         loadingDialogeSHow();
         String URL = GlobalData.getAllTasknUrl();
         JSONObject params = new JSONObject();
@@ -174,8 +179,15 @@ public class MainActivity extends AppCompatActivity {
                 AllTask allTask = gson.fromJson(response.toString(), AllTask.class);
                 taskList.addAll(Arrays.asList(allTask.getAllTask()));
                 Collections.reverse(taskList);
-                taskAdapter = new TaskAdapter(taskList, MainActivity.this);
-                allTaskRv.setAdapter(taskAdapter);
+                if (taskList.size() == 0){
+                    allTaskRv.setVisibility(View.GONE);
+                    noInternetLL.setVisibility(View.GONE);
+                    noDataLL.setVisibility(View.VISIBLE);
+                }else {
+                    taskAdapter = new TaskAdapter(taskList, MainActivity.this);
+                    allTaskRv.setAdapter(taskAdapter);
+                }
+
 
             }
         }, new Response.ErrorListener() {
@@ -208,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
         allTaskRv.setLayoutManager(new LinearLayoutManager(this));
         taskList = new ArrayList<>();
         noInternetLL = findViewById(R.id.noInternetLL);
+        noDataLL = findViewById(R.id.noDataLL);
         mainSwipeRef = findViewById(R.id.mainSwipeRef);
     }
 
@@ -241,9 +254,20 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        if (showingIsArchived){
+            showingIsArchived = false;
+            getAllTheTask(userId, false);
+        }else {
+            super.onBackPressed();
+        }
+
+    }
 
     private void archiveTask() {
         taskList.clear();
+        showingIsArchived = true;
         getAllTheTask(userId, true);
     }
 
@@ -277,14 +301,20 @@ public class MainActivity extends AppCompatActivity {
                     taskList.remove(position);
                     taskAdapter.notifyItemRemoved(position);
                 }else {
-                    ToastUtils.showToastOk(MainActivity.this, "Nothing archived");
+                    ToastUtils.showToastOk(MainActivity.this, "Failed");
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 mDialog.dismiss();
-                ToastUtils.showToastError(MainActivity.this, "Cannot deleted. Try again");
+                if (error.toString().toLowerCase().contains("noconnectionerror")){
+                    ToastUtils.showToastError(MainActivity.this,"No internet! Check your internet connection.");
+                }else if(error.toString().toLowerCase().contains("timeout")){
+                    ToastUtils.showToastError(MainActivity.this,"Request timeout. Server not responding!");
+                }else {
+                    ToastUtils.showToastError(MainActivity.this,"Error in network. Please try again later.");
+                }
 
             }
         });
